@@ -1,11 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login e Cadastro</title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    
+
+    <header>Mapa de Tribos Indígenas no Rio Grande do Sul</header>
+
+    <form class="loginForm" id="loginForm">
+        <h2>Login</h2>
+            <input type="email" id="email_login" placeholder="Email" required>
+            <input type="password" id="password_login" placeholder="Senha" required>
+            <button class="botoesRegistrar" onclick="logar(event)">Logar</button>
+            <button class="LinkCadastro" onclick="linkCadastro(event)">Cadastrar</button>
+    </form>
+
+    <script src="./script.js"></script>
 </body>
 </html>
