@@ -76,4 +76,15 @@ input{
     max-width: 30vh;
 }
 
+.linkCadastro{
+    border: none;
+    color: #2c3e50;
+    cursor: pointer;
+    margin-top: 1vh;
+    font-size: 2vh;
+    font-weight: bold;
+}
 
+.linkCadastro:hover{
+    color: blue;
+}
