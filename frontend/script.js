@@ -29,3 +29,11 @@ async function logar(event) {
         alert(results.message);
     }
 }
+
+document.getElementById("linkCadastrar").addEventListener("click", function() {
+    window.location.href = "cadastro.html"
+})
+
+document.getElementById("linkLogar").addEventListener("click", function() {
+    window.location.href = "login.html"
+})
