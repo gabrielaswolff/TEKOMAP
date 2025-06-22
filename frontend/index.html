@@ -9,10 +9,18 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <header>Mapa de Tribos Indígenas no Rio Grande do Sul</header>
-    <div id="map-container">
-        <div id="map"></div>
+    <header>
+        <img height="95px" src="/frontend/images/logoSemFundo.png" alt="">
+    </header>
+
+   <div id="map-container">
+    <div id="map"></div>
+
+    <div id="pesquisa">
+        <h2>Pesquisar</h2>
+        <input type="text" placeholder="lorex">
     </div>
+</div>
 
     <script>
         var map = L.map('map').setView([-30.0, -53.5], 7); 
