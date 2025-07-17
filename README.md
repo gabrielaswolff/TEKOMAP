@@ -15,7 +15,7 @@ Localização aproximada
 
 Informações culturais ou históricas (planejado)
 
-Sobre o Quiz educativo
+# Quiz educativo
 
 Espaço onde os usuários podem testar seus conhecimentos com perguntas relacionadas a:
 
