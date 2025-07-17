@@ -9,13 +9,16 @@
 <body>
 
     <header>Mapa de comunidades indígenas no Rio Grande do Sul</header>
-
-    <form class="loginForm" id="loginForm">
-        <h2>Cadastrar </h2>
-            <input type="email" id="email_login" placeholder="Email" required>
-            <input type="password" id="password_login" placeholder="Senha" required>
-            <button class="botoesRegistrar" onclick="logar(event)">Cadastrar</button>
-    </form>
+   
+          <form id="registerForm">
+            <h2>Cadastro</h2>
+            <input type="text" id="nome" placeholder="Nome" required>
+            <input type="email" id="emailCadastro" placeholder="Email" required>
+            <input type="password" id="senhaCadastro" placeholder="Senha" required>
+            <button class="bntEntrar" type="submit">Cadastrar</button>
+          </form>
+          <a class="linkCadastro" href="index.html">Já tem uma conta?</a>
+        </main>
     
 
     <script src="./script.js"></script>
