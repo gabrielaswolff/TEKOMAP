@@ -42,7 +42,7 @@ header{
 
 /* Mapa ocupa 70% */
 #map {
-    width: 70%;
+    width: 100%;
     height: 100%;
 }
 

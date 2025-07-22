@@ -110,3 +110,26 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+fetch('/frontend/terras-rs.geojson')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Erro ao carregar o GeoJSON");
+    }
+    return response.json();
+  })
+  .then(geojson => {
+    L.geoJSON(geojson, {
+      pointToLayer: (feature, latlng) => {
+        return L.marker(latlng); // marcador padrão
+      },
+      onEachFeature: (feature, layer) => {
+        if (feature.properties && feature.properties.nome) {
+          layer.bindPopup(`<strong>${feature.properties.nome}</strong>`);
+        }
+      }
+    }).addTo(map);
+  })
+  .catch(error => {
+    console.error("Erro:", error);
+  });
+

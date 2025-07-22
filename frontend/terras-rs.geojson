@@ -1,0 +1,86 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "nome": "Terra Indígena Guarita"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-53.65148, -27.48811]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nome": "Terra Indígena Votouro-Kandóia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-52.62785, -27.41915]
+      }
+    },
+
+    {
+      "type": "Feature",
+      "properties": {
+        "nome": "Terra Indígena Inhacorá"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-53.63782, -27.45156]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nome": "Terra Indígena Votouro"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-52.64952, -27.45550]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nome": "Terra Indígena Nonoai"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-52.83364, -27.33928]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nome": "Reserva Indígena Nonoai"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-52.90795, -27.35339]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nome": "Terra Indígena Ligeiro"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-51.94252, -27.94329]
+      }
+    },
+     {
+      "type": "Feature",
+      "properties": {
+        "nome": "Terra Indígena Cacique Doble"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-51.62664, -27.81948]
+      }
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa de Tribos Indígenas no RS</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="/frontend/css/style.css" />
+  <style>
+    #map {
+      height: 600px;
+      width: 100%;
+    }
+
+    #coordenadas {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 6px 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      z-index: 1000;
+    }
+
+    .custom-marker {
+      width: 18px;
+      height: 18px;
+      background-color: #00cc66;
+      border: 2px solid #000000;
+      box-shadow: 0 0 6px #000;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html">
+      <img height="95px" src="/frontend/images/logoSemFundo.png" alt="Logo TEKOMAP" />
+    </a>
+    <button onclick="window.location.href='quiz.html'">Quiz</button>
+  </header>
+
+  <div id="map-container">
+    <div id="map"></div>
+    <div id="pesquisa">
+      <h2>Pesquisar</h2>
+      <input type="text" placeholder="lorex" />
+    </div>
+    <!-- ✅ Coordenadas serão exibidas aqui -->
+    <div id="coordenadas">Passe o mouse no mapa</div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([-29.5, -53], 7);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Mostrar coordenadas com o mouse
+    const coordBox = document.getElementById('coordenadas');
+    map.on('mousemove', function(e) {
+      const lat = e.latlng.lat.toFixed(5);
+      const lng = e.latlng.lng.toFixed(5);
+      coordBox.innerText = `Lat: ${lat}, Lng: ${lng}`;
+    });
+
+    // Mostrar coordenadas ao clicar no mapa
+    map.on('click', function(e) {
+      const lat = e.latlng.lat.toFixed(5);
+      const lng = e.latlng.lng.toFixed(5);
+      alert(`Você clicou em:\nLatitude: ${lat}\nLongitude: ${lng}`);
+    });
+
+    // Carregar GeoJSON
+    fetch('/frontend/terras-rs.geojson')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Arquivo GeoJSON não encontrado");
+        }
+        return response.json();
+      })
+      .then(geojson => {
+        L.geoJSON(geojson, {
+          pointToLayer: (feature, latlng) => {
+            return L.marker(latlng);
+          },
+          onEachFeature: (feature, layer) => {
+            if (feature.properties && feature.properties.nome) {
+              layer.bindPopup(`<strong>${feature.properties.nome}</strong>`);
+            }
+          }
+        }).addTo(map);
+      })
+      .catch(error => {
+        console.error("Erro ao carregar GeoJSON:", error);
+      });
+  </script>
+
+  <script src="/frontend/script.js"></script>
+</body>
+</html>
