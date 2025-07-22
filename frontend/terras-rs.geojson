@@ -121,7 +121,160 @@
     "type": "Point",
     "coordinates": [-53.41009, -27.1827]
   }
+},
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Kaingang de Iraí"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-53.2414, -27.18882]
+  }
+},
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Guarani Votouro"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-52.67234, -27.50547]
+  }
+},
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Ventarra"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-52.27935, -27.79669]
+  }
+},
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Mato Preto"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-52.21755, -27.81126]
+  }
+},
+
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Passo Grande do Rio Forquilha"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-51.77255, -27.867]
+  }
+},
+
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Carreteiro"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-52.01521, -28.19545]
+  }
+},
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Mato Castelhano-FÁg TY KA"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-52.17155, -28.31272]
+  }
+},
+
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Monte Caseros"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [ -51.7094, -28.35926]
+  }
+}, 
+
+
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Reserva Indígena Borboleta"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-52.78936, -28.67113 ]
+  }
+},
+
+
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Salto Grande do Jacuí"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-53.23413, -29.06025]
+  }
+}, 
+
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Reserva Indígena Morro Santana"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-51.39818, -29.09332 ]
+  }
+},
+
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Reserva Indígena Estrela"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-51.25957, -29.25399]
+  }
+}, 
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Irapuã"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [ -53.19866, -30.34041]
+  }
+},
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Reserva Indígena Campo Bonito"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [ -49.79582, -29.36397]
+  }
 }
+
+
+
+
 
 
 
