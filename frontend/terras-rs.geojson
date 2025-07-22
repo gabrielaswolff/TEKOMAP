@@ -270,14 +270,116 @@
     "type": "Point",
     "coordinates": [ -49.79582, -29.36397]
   }
+},
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Reserva Indígena Riozinho"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [ -50.40624, -29.62791]
+  }
+},
+
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Guarani Barra de Ouro"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-50.29615,-29.66929]
+  }
+},
+
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Varzinha"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-50.24574, -29.71655]
+  }
+},
+
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Reserva Indígena Estrada do Mar"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-50.15338,-29.86924 ]
+  }
+},
+
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Capivari"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-50.35628, -30.35931]
+  }
+},
+
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Cantagalo"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-51.02502, -30.18811]
+  }
+},
+
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Reserva Indígena Coxilha da Cruz"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-51.44816, -30.41824]
+  }
+},
+
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Reserva Indígena Água Grande"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-51.88024, -30.67743]
+  }
+},
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Guarani de Águas Brancas"
+  },
+
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-51.62206, -30.76098]
+  }
+},
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Pacheca"
+  },
+
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-51.78188, -31.1671]
+  }
 }
-
-
-
-
-
-
-
 
   ]
 }
