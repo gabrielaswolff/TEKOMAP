@@ -21,17 +21,6 @@
         "coordinates": [-52.62785, -27.41915]
       }
     },
-
-    {
-      "type": "Feature",
-      "properties": {
-        "nome": "Terra Indígena Inhacorá"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-53.63782, -27.45156]
-      }
-    },
     {
       "type": "Feature",
       "properties": {
@@ -81,6 +70,61 @@
         "type": "Point",
         "coordinates": [-51.62664, -27.81948]
       }
-    }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nome": "Reserva Indígena Aldeia Kondá"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-52.56478, -27.211536]
+      }
+    }, 
+   {
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Serrinha"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-52.88061, -27.68547]
+  }
+},
+
+ {
+  "type": "Feature",
+  "properties": {
+    "nome": "Reserva Indígena Inhacapetum"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-54.67159, -28.66996]
+  }
+},
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Inhacorá"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-53.89697, -27.84934]
+  }
+},
+{
+  "type": "Feature",
+  "properties": {
+    "nome": "Terra Indígena Rio dos Índios"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-53.41009, -27.1827]
+  }
+}
+
+
+
+
   ]
 }
