@@ -309,9 +309,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Terra Indígena Monte Caseros",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": 727,
+        "etnia": "Kaingang",
+        "area_ha": "1 mil"
       },
       "geometry": {
         "type": "Point",
@@ -325,9 +325,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Reserva Indígena Borboleta",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": "?",
+        "etnia": "Kaingang",
+        "area_ha": "?"
       },
       "geometry": {
         "type": "Point",
@@ -341,9 +341,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Terra Indígena Salto Grande do Jacuí",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": 423,
+        "etnia": "Guarani",
+        "area_ha": 234
       },
       "geometry": {
         "type": "Point",
@@ -357,9 +357,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Reserva Indígena Morro Santana",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": "?",
+        "etnia": "Kaingang",
+        "area_ha": 19
       },
       "geometry": {
         "type": "Point",
@@ -373,9 +373,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Reserva Indígena Estrela",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": 125,
+        "etnia": "Kaingang",
+        "area_ha": 25
       },
       "geometry": {
         "type": "Point",
@@ -389,9 +389,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Terra Indígena Irapuã",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": 77,
+        "etnia": "Guarani",
+        "area_ha": 222
       },
       "geometry": {
         "type": "Point",
@@ -405,9 +405,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Reserva Indígena Campo Bonito",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": "?",
+        "etnia": "Guarani",
+        "area_ha": 76
       },
       "geometry": {
         "type": "Point",
@@ -421,9 +421,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Reserva Indígena Riozinho",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": "?",
+        "etnia": "Guarani",
+        "area_ha": 24
       },
       "geometry": {
         "type": "Point",
@@ -437,9 +437,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Terra Indígena Guarani Barra de Ouro",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": 185,
+        "etnia": "Guarani",
+        "area_ha": "2 mil"
       },
       "geometry": {
         "type": "Point",
@@ -453,9 +453,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Terra Indígena Varzinha",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": 64,
+        "etnia": "Guarani",
+        "area_ha": 776
       },
       "geometry": {
         "type": "Point",
@@ -469,9 +469,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Reserva Indígena Estrada do Mar",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": "?",
+        "etnia": "Guarani",
+        "area_ha": 45
       },
       "geometry": {
         "type": "Point",
@@ -485,9 +485,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Terra Indígena Capivari",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": 60,
+        "etnia": "Guarani",
+        "area_ha": 43
       },
       "geometry": {
         "type": "Point",
@@ -501,9 +501,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Terra Indígena Cantagalo",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": 164,
+        "etnia": "Guarani",
+        "area_ha": 283.67
       },
       "geometry": {
         "type": "Point",
@@ -517,9 +517,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Reserva Indígena Coxilha da Cruz",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": 128,
+        "etnia": "Guarani",
+        "area_ha": 202
       },
       "geometry": {
         "type": "Point",
@@ -533,9 +533,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Reserva Indígena Água Grande",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": 53,
+        "etnia": "Guarani",
+        "area_ha": 165
       },
       "geometry": {
         "type": "Point",
@@ -549,9 +549,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Terra Indígena Guarani de Águas Brancas",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": 39,
+        "etnia": "Guarani",
+        "area_ha": 230
       },
       "geometry": {
         "type": "Point",
@@ -565,9 +565,9 @@
       "type": "Feature",
       "properties": {
         "nome": "Terra Indígena Pacheca",
-        "populacao": 1000,
-        "etnia": "Desconhecida",
-        "area_ha": 200
+        "populacao": 72,
+        "etnia": "Guarani",
+        "area_ha": "2 mil"
       },
       "geometry": {
         "type": "Point",
