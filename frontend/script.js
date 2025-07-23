@@ -1,6 +1,5 @@
 const apiUrl = 'http://localhost:3005';
 
-
 // Cadastro de Usuário
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -110,26 +109,36 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-fetch('/frontend/terras-rs.geojson')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error("Erro ao carregar o GeoJSON");
-    }
-    return response.json();
-  })
-  .then(geojson => {
-    L.geoJSON(geojson, {
-      pointToLayer: (feature, latlng) => {
-        return L.marker(latlng); // marcador padrão
-      },
-      onEachFeature: (feature, layer) => {
-        if (feature.properties && feature.properties.nome) {
-          layer.bindPopup(`<strong>${feature.properties.nome}</strong>`);
-        }
-      }
-    }).addTo(map);
-  })
-  .catch(error => {
-    console.error("Erro:", error);
-  });
+// fetch('/frontend/terras-rs.geojson')
+//   .then(response => {
+//     if (!response.ok) {
+//       throw new Error("Erro ao carregar o GeoJSON");
+//     }
+//     return response.json();
+//   })
+//   .then(geojson => {
+//     L.geoJSON(geojson, {
+//       pointToLayer: (feature, latlng) => {
+//         return L.marker(latlng); // marcador padrão
+//       },
+//       onEachFeature: (feature, layer) => {
+//         if (feature.properties && feature.properties.nome) {
+//          const props = feature.properties;
+
+// let conteudoPopup = `
+//   <strong>${props.nome}</strong><br>
+//   ${props.populacao ? `População: ${props.populacao}<br>` : ""}
+//   ${props.etnia ? `Etnia: ${props.etnia}<br>` : ""}
+//   ${props.area_km2 ? `Área: ${props.area_km2} km²` : ""}
+// `;
+
+// layer.bindPopup(conteudoPopup);
+
+//         }
+//       }
+//     }).addTo(map);
+//   })
+//   .catch(error => {
+//     console.error("Erro:", error);
+//   });
 
