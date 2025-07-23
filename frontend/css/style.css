@@ -1,4 +1,4 @@
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -12,114 +12,157 @@ body {
     justify-content: center;
     height: 80vh;
     background-image: url(/frontend/images/Fundo.png);
-    background-size: 200vh; 
+    background-size: 200vh;
     background-position: top center;
 }
 
-header{
+header {
     width: 100%;
-    height: 13vh;
+    height: 14vh;
     background-color: #eddaa6;
     color: white;
     font-size: 24px;
     font-weight: bold;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-bottom: 4px solid #8b7653;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header button {
+    padding: 8px 16px;
+    background-color: #b56a45;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    align-items: center;
+    margin-right: 2vh;
+}
+
+header button:hover {
+    background-color: #8b3d10;
+}
+
+#logo {
+    margin-left: 0.5vh;
+}
+
+
+.notificacao-coordenada {
+    position: fixed;
+    top: 110px;
+    right: 20px;
+    background-color: #ffffff;
+    color: #333;
+    border-left: 5px solid #b56a45;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    padding: 12px 16px;
+    border-radius: 6px;
+    z-index: 9999;
+    max-width: 300px;
+}
+
+.notificacao-coordenada .fechar {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #888;
+    cursor: pointer;
+}
+
+.notificacao-coordenada .fechar:hover {
+    color: #000;
+}
+
+#map {
+    height: 600px;
+    width: 100%;
 }
 
 #map-container {
-    background-color: #b0a588;
     width: 90%;
     max-width: 1100px;
     height: 500px;
     margin-top: 15vh;
     border-radius: 12px;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.25);
-    display: flex; /* organiza mapa e painel lado a lado */
+    display: flex;
     flex-direction: row;
     overflow: hidden;
-    
+    position: relative;
+
 }
 
-/* Mapa ocupa 70% */
-#map {
-    width: 100%;
-    height: 100%;
+#coordenadas {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    z-index: 1000;
 }
 
-/* Painel de pesquisa ocupa 30% */
 #pesquisa {
-    width: 30%;
-    background-color: #8b7653;
-    color: white;
-    padding: 3vh;
+    width: 50vh;
+    padding: 10vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    background: #8b7653;
+    border-left: 1px solid #ddd;
+    justify-content: center;
 }
 
 #pesquisa h2 {
-    color: #4a2e0f;
-    margin-bottom: 3vh;
-    font-size: 3vh;
+    text-align: center;
+    font-size: 4.5vh;
+    color: #372a07;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#pesquisa input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 2vh;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 #pesquisa button {
-    background-color: #eddaa6;
-    border: none;
-    border-radius: 10px;
-    padding: 1vh 2vh;
-    margin: 1vh;
-    font-weight: bold;
-    cursor: pointer;
+    background: #b56a45;
+    margin-bottom: 2vh;
+    border-radius: 1vh;
+    padding: 1vh;
+    width: 60%;
+    max-width: 150px;
+    color: #372a07;
+    border-bottom: 4px solid #8b3d10;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    cursor:pointer;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 
-.loginForm{
-    background-color: white;
-    padding: 5vh;
-    border-radius: 10px;
-    width: 50vh;
+#pesquisa button:hover {
+    background-color: #9e5835;
+}
+
+#pesquisa .buttons-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 2px solid #cfccc4;
-    box-shadow: 0 0 10px #bfbaa9;
-    height: 50vh; 
-    margin-top: 10vh;
-}
-
-
-input{
-    width: 30vh;
-    height: 5vh;
-    margin: 1vh;
-    border-color: #2c3e50;
-    border-radius: 1vh;
-}
-
-.botoesRegistrar{
-    display: flex;
-    justify-content: center;
-    cursor: pointer;
-    background-color: #2c3e50;
-    color: white;
-    border-radius: 1vh;
-    padding: 1.5vh 3vh;
-    font-weight: bold;
-    border-color: white;
-    max-width: 30vh;
-}
-
-.linkCadastro{
-    border: none;
-    color: #2c3e50;
-    cursor: pointer;
-    margin-top: 1vh;
-    font-size: 2vh;
-    font-weight: bold;
-}
-
-.linkCadastro:hover{
-    color: blue;
+    width: 100%;
 }
