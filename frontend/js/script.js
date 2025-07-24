@@ -59,6 +59,10 @@ function filterTerritories(searchTerm) {
         return;
     }
 
+    // Remove notificações existentes
+    const notificacaoExistente = document.querySelector('.notificacao-busca');
+    if (notificacaoExistente) notificacaoExistente.remove();
+
     markersLayer.clearLayers();
     const searchLower = searchTerm.toLowerCase();
 
@@ -78,22 +82,38 @@ function filterTerritories(searchTerm) {
         ));
         markersLayer.addLayer(marker);
 
-        // Abre popup automaticamente se houver apenas um resultado
         if (filtered.length === 1) {
             marker.openPopup();
         }
     });
 
-    // Ajusta o zoom para mostrar todos os resultados
     if (filtered.length > 0) {
         const bounds = L.latLngBounds(
             filtered.map(t => [t.geometry.coordinates[1], t.geometry.coordinates[0]])
         );
         map.fitBounds(bounds, { padding: [50, 50] });
     } else {
-        alert("Nenhum território encontrado com esse critério de busca.");
-    }
+    // Cria a notificação estilizada
+    const notificacao = document.createElement('div');
+    notificacao.className = 'notificacao-busca';
+    notificacao.innerHTML = `
+        <button class="fechar" onclick="this.parentElement.remove()">&times;</button>
+        <div class="conteudo">
+            <i class="bi bi-exclamation-triangle-fill icone"></i>
+            <strong>Nenhum território encontrado</strong>
+            <span>Não encontramos resultados para "${searchTerm}"</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notificacao);
+    
+    // Remove automaticamente após 5 segundos
+    setTimeout(() => {
+        notificacao.style.animation = 'fadeOut 0.3s ease-out';
+        setTimeout(() => notificacao.remove(), 300);
+    }, 5000);
 }
+   }
 
 // Carregar dados GeoJSON
 function loadTerritories() {

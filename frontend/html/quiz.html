@@ -3,22 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tekomap</title>
+  <title>Quiz Tekomap</title>
   <link rel="stylesheet" href="/frontend/css/quiz.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 </head>
 <body>
 
   <header>
     <a href="index.html">
-      <img height="90vh" id="logo" src="/frontend/images/logo2.png" alt="Logo TEKOMAP" />
+      <img  height="90vh"  id="logo" src="/frontend/images/logo2.png" alt="Logo TEKOMAP" />
     </a>
-    <button onclick="window.location.href='quiz.html'">Quiz</button>
   </header>
 
-
-
+  <main>
+    <div class="quiz-container">
+      <div class="quiz-header">
+        <h1>Teste Seu Conhecimento</h1>
+        <p>Descubra o quanto você sabe sobre as comunidades indígenas do Rio Grande do Sul</p>
+      </div>
+      
+      <a href="https://atlassocioeconomico.rs.gov.br/areas-indigenas" target="_blank">
+        <img src="/frontend/images/mapaFunai2024.png" alt="Mapa de territórios indígenas" class="quiz-image">
+      </a>
+      
+      <p class="source-text">Fonte: Atlas Socioeconômico Rio Grande do Sul</p>
+      
+      <button class="start-btn">
+        <i class="bi bi-play-fill"></i> Iniciar Quiz
+      </button>
+    </div>
+  </main>
 
   <script src="/frontend/js/quiz.js"></script>
 </body>
-
 </html>
