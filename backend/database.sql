@@ -1,7 +1,7 @@
-create database TEKOMAP;
-use TEKOMAP;
+CREATE DATABASE IF NOT EXISTS TEKOMAP;
+USE TEKOMAP;
 
-CREATE TABLE IF NOT EXISTS usuarios(
+CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -9,4 +9,25 @@ CREATE TABLE IF NOT EXISTS usuarios(
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS perguntas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    pergunta TEXT NOT NULL,
+    opcoes JSON NOT NULL, 
+    resposta_correta INT NOT NULL, 
+    pontos INT NOT NULL DEFAULT 10
+);
 
+CREATE TABLE IF NOT EXISTS perfis (
+    user_id INT PRIMARY KEY,
+    foto_url VARCHAR(255) DEFAULT 'default.jpg',
+    pontos_totais INT DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES usuarios(id)
+);
+
+CREATE TABLE IF NOT EXISTS scores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    pontuacao INT NOT NULL,
+    data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES usuarios(id)
+);
