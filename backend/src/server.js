@@ -5,12 +5,14 @@ const db = require('./db_config');
 const app = express();
 const porta = 3005;
 
-
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 app.listen(porta, () => console.log(`Servidor rodando na porta ${porta}`));
 
+// Rotas de usuário
 app.post('/register', (req, res) => {
     const { nome, email, senha } = req.body;
 
@@ -24,28 +26,60 @@ app.post('/register', (req, res) => {
     });
 });
 
+// ... (outras rotas existentes)
 
-// Listar todos os usuários
+// Rota de login
+app.post('/login', (req, res) => {
+  const { email, senha } = req.body;
+
+  const query = 'SELECT id, nome, email FROM usuarios WHERE email = ? AND senha = ?';
+  db.query(query, [email, senha], (err, results) => {
+    if (err) {
+      console.error('Erro ao fazer login:', err);
+      return res.status(500).json({ success: false, message: 'Erro ao fazer login' });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ success: false, message: 'E-mail ou senha incorretos' });
+    }
+
+    
+    const userId = results[0].id;
+    db.query(
+      'INSERT IGNORE INTO perfis (user_id) VALUES (?)',
+      [userId],
+      (err) => {
+        if (err) console.error('Erro ao verificar perfil:', err);
+        
+        res.json({ 
+          success: true,
+          message: 'Login realizado com sucesso',
+          user: results[0]
+        });
+      }
+    );
+  });
+});
+
+// ... (restante do seu código existente)
+
 app.get('/usuarios', (req, res) => {
-    const query = 'SELECT id, nome, email FROM usuarios id = ?';
+    const query = 'SELECT id, nome, email FROM usuarios';
 
     db.query(query, (err, results) => {
         if (err) {
             console.error('Erro ao buscar usuários:', err);
             return res.status(500).json({ success: false, message: 'Erro ao buscar usuários.' });
         }
-
         res.json({ success: true, usuarios: results });
     });
 });
-
 
 // Obter usuário por ID
 app.get('/usuarios/:id', (req, res) => {
     const { id } = req.params;
 
     const query = 'SELECT id, nome, email FROM usuarios WHERE id = ?';
-
     db.query(query, [id], (err, results) => {
         if (err) {
             console.error('Erro ao buscar usuário:', err);
@@ -60,9 +94,7 @@ app.get('/usuarios/:id', (req, res) => {
     });
 });
 
-
 // Editar Usuário
-
 app.put('/usuarios/editar/:id', (req, res) => {
     const { id } = req.params;
     const { nome, email, senha } = req.body;
@@ -78,7 +110,6 @@ app.put('/usuarios/editar/:id', (req, res) => {
 });
 
 // Deletar Usuário
-
 app.delete('/usuarios/deletar/:id', (req, res) => {
     const { id } = req.params;
 
@@ -92,109 +123,187 @@ app.delete('/usuarios/deletar/:id', (req, res) => {
     });
 });
 
-// ... (código existente)
+// Obter informações do usuário para o frontend
+app.get('/user-info/:id', (req, res) => {
+  const { id } = req.params;
 
-// Adicionar perguntas (exemplo)
-const perguntas = [
-    {
-        pergunta: "Quantas comunidades indígenas existem no RS?",
-        opcoes: ["12", "23", "45", "57"],
-        resposta_correta: 1, // Índice 1 = "23"
-        pontos: 10
+  const query = `
+    SELECT u.id, u.nome, p.foto_url 
+    FROM usuarios u
+    LEFT JOIN perfis p ON u.id = p.user_id
+    WHERE u.id = ?
+  `;
+  
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar informações do usuário:', err);
+      return res.status(500).json({ error: 'Erro ao buscar informações do usuário' });
     }
-    // Adicione mais perguntas aqui
+    
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+    
+    res.json(results[0]);
+  });
+});
+
+
+const perguntasQuiz = [
+    {
+        pergunta: "Quais são as etnias indígenas existentes no RS?",
+        opcoes: ["Tupi, Guarani e Yanomami", "Kaingang, Guarani e Charrua", "Xavante, Pataxó e Tikuna", "Mapuche, Aimará e Inca"],
+        resposta_correta: 1,
+        pontos: 20
+    },
+    {
+        pergunta: "O que diferencia uma reserva de um território indígena?",
+        opcoes: [
+            "Reservas são temporárias, territórios são permanentes",
+            "Territórios são demarcados por lei federal, reservas por acordos locais",
+            "Não há diferença, são termos intercambiáveis",
+            "Reservas são para cultivo, territórios para moradia"
+        ],
+        resposta_correta: 1,
+        pontos: 15
+    },
+    {
+        pergunta: "Por que é importante demarcar essas terras?",
+        opcoes: [
+            "Para tentar evitar o apagamento cultural, que infelizmente acontece de forma desenfreada",
+            "Para limitar o acesso dos indígenas às cidades",
+            "Apenas para fins de controle governamental",
+            "Para permitir a exploração mineral"
+        ],
+        resposta_correta: 0,
+        pontos: 25
+    },
+    {
+        pergunta: "Qual é a maior terra indígena em extensão no RS?",
+        opcoes: [
+            "Terra Indígena Guarita",
+            "Terra Indígena Nonoai",
+            "Terra Indígena Cacique Doble",
+            "Terra Indígena Serrinha"
+        ],
+        resposta_correta: 1,
+        pontos: 20
+    },
+    {
+        pergunta: "Como o capitalismo impacta os territórios indígenas na atualidade?",
+        opcoes: [
+            "Apenas traz desenvolvimento econômico",
+            "Acelera a mercantilização da terra e dos modos de vida",
+            "Não interfere na vida das comunidades",
+            "Garante autonomia financeira plena"
+        ],
+        resposta_correta: 1,
+        pontos: 25
+    }
 ];
 
-
-
-
-// Rota para configurar o quiz (executar uma vez)
+// Configuração inicial do quiz
 app.get('/setup-quiz', (req, res) => {
-    const perguntas = [
-        {
-            pergunta: "Quais são as etnias indígenas existentes no RS?",
-            opcoes: ["Tupi, Guarani e Yanomami", "Kaingang, Guarani e Charrua", "Xavante, Pataxó e Tikuna", "Mapuche, Aimará e Inca"],
-            resposta_correta: 1,
-            pontos: 20
-        },
-        {
-            pergunta: "O que diferencia uma reserva de um território indígena?",
-            opcoes: [
-                "Reservas são temporárias, territórios são permanentes",
-                "Territórios são demarcados por lei federal, reservas por acordos locais",
-                "Não há diferença, são termos intercambiáveis",
-                "Reservas são para cultivo, territórios para moradia"
-            ],
-            resposta_correta: 1,
-            pontos: 15
-        },
-        // Adicione as demais perguntas no mesmo formato
-        {
-            pergunta: "Por que é importante demarcar essas terras?",
-            opcoes: [
-                "Para tentar evitar o apagamento cultural, que infelizmente acontece de forma desenfreada",
-                "Para limitar o acesso dos indígenas às cidades",
-                "Apenas para fins de controle governamental",
-                "Para permitir a exploração mineral"
-            ],
-            resposta_correta: 0,
-            pontos: 25
-        },
-        {
-            pergunta: "Qual é a maior terra indígena em extensão no RS?",
-            opcoes: [
-                "Terra Indígena Guarita",
-                "Terra Indígena Nonoai",
-                "Terra Indígena Cacique Doble",
-                "Terra Indígena Serrinha"
-            ],
-            resposta_correta: 1,
-            pontos: 20
-        },
-        {
-            pergunta: "Como o capitalismo impacta os territórios indígenas na atualidade?",
-            opcoes: [
-                "Apenas traz desenvolvimento econômico",
-                "Acelera a mercantilização da terra e dos modos de vida",
-                "Não interfere na vida das comunidades",
-                "Garante autonomia financeira plena"
-            ],
-            resposta_correta: 1,
-            pontos: 25
-        }
-    ];
-
-    const query = 'INSERT INTO perguntas (pergunta, opcoes, resposta_correta, pontos) VALUES ?';
-    const values = perguntas.map(p => [p.pergunta, JSON.stringify(p.opcoes), p.resposta_correta, p.pontos]);
-    
-    db.query(query, [values], (err, result) => {
+    // Primeiro limpa a tabela
+    db.query('TRUNCATE TABLE perguntas', (err) => {
         if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: 'Quiz configurado com sucesso!' });
+        
+        // Prepara os valores para inserção
+        const values = perguntasQuiz.map(p => [
+            p.pergunta,
+            JSON.stringify(p.opcoes), // Convertemos para JSON string
+            p.resposta_correta,
+            p.pontos
+        ]);
+        
+        // Insere as perguntas
+        db.query(
+            'INSERT INTO perguntas (pergunta, opcoes, resposta_correta, pontos) VALUES ?',
+            [values],
+            (err, result) => {
+                if (err) return res.status(500).json({ error: err.message });
+                res.json({ 
+                    message: 'Quiz configurado com sucesso!',
+                    perguntasInseridas: result.affectedRows
+                });
+            }
+        );
     });
 });
 
-// Buscar perguntas
+// Buscar perguntas com tratamento robusto
 app.get('/perguntas', (req, res) => {
-    db.query('SELECT * FROM perguntas', (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json(results.map(r => ({ ...r, opcoes: JSON.parse(r.opcoes) })));
+    db.query('SELECT id, pergunta, opcoes, resposta_correta, pontos FROM perguntas', (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar perguntas:', err);
+            return res.status(500).json({ 
+                error: 'Erro ao buscar perguntas',
+                details: err.message 
+            });
+        }
+        
+        const perguntas = results.map(r => {
+            try {
+                // Verifica se opcoes não está vazio/null
+                if (!r.opcoes) {
+                    throw new Error('Opções vazias');
+                }
+                
+                // Tenta parsear o JSON
+                const opcoes = JSON.parse(r.opcoes);
+                
+                // Verifica se é um array
+                if (!Array.isArray(opcoes)) {
+                    throw new Error('Opções não é um array');
+                }
+                
+                return {
+                    id: r.id,
+                    pergunta: r.pergunta,
+                    opcoes: opcoes,
+                    resposta_correta: r.resposta_correta,
+                    pontos: r.pontos
+                };
+            } catch (e) {
+                console.error(`Erro ao processar pergunta ID ${r.id}:`, e);
+                console.error('Conteúdo inválido:', r.opcoes);
+                
+                return {
+                    id: r.id,
+                    pergunta: r.pergunta,
+                    opcoes: [],
+                    resposta_correta: r.resposta_correta,
+                    pontos: r.pontos,
+                    erro: 'Formato inválido das opções',
+                    detalhes: e.message
+                };
+            }
+        });
+        
+        res.json(perguntas);
     });
 });
 
-// Submeter score
+
+// Submeter pontuação
 app.post('/submit-score', (req, res) => {
     const { userId, score } = req.body;
     
-    // Atualiza perfil se logado
-    if (userId) {
-        db.query('INSERT INTO scores (user_id, pontuacao) VALUES (?, ?)', [userId, score], (err) => {
-            if (err) console.error('Erro ao salvar score:', err);
-        });
-        
-        db.query('UPDATE perfis SET pontos_totais = pontos_totais + ? WHERE user_id = ?', [score, userId]);
+    if (!userId || isNaN(score)) {
+        return res.status(400).json({ success: false, message: 'Dados inválidos' });
     }
-    
-    res.json({ success: true });
+
+    db.query('INSERT INTO scores (user_id, pontuacao) VALUES (?, ?)', [userId, score], (err) => {
+        if (err) {
+            console.error('Erro ao salvar score:', err);
+            return res.status(500).json({ success: false, message: 'Erro ao salvar pontuação' });
+        }
+        
+        db.query('UPDATE perfis SET pontos_totais = pontos_totais + ? WHERE user_id = ?', [score, userId], (err) => {
+            if (err) console.error('Erro ao atualizar perfil:', err);
+            res.json({ success: true, message: 'Pontuação registrada com sucesso!' });
+        });
+    });
 });
 
 // Ranking global
@@ -210,7 +319,11 @@ app.get('/ranking', (req, res) => {
     `;
     
     db.query(query, (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) {
+            console.error('Erro ao buscar ranking:', err);
+            return res.status(500).json({ error: 'Erro ao buscar ranking' });
+        }
         res.json(results);
     });
 });
+

@@ -1,203 +1,279 @@
+// Configurações globais
 const apiUrl = 'http://localhost:3005';
-
-// Cadastro de Usuário
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const nome = document.getElementById('nome').value;
-    const email = document.getElementById('emailCadastro').value;
-    const senha = document.getElementById('senhaCadastro').value;
-
-    try {
-        // Cadastra o usuário
-        const response = await fetch(`${apiUrl}/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nome, email, senha })
-        });
-
-        const data = await response.json();
-        mostrarNotificacao(data.message);
-
-        if (response.ok) {
-            // Após cadastro, faz login automático
-            const loginResponse = await fetch(`${apiUrl}/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, senha })
-            });
-
-            const loginData = await loginResponse.json();
-            if (loginData.success) {
-                mostrarNotificacao('Bem-vindo(a), ' + loginData.user.nome + '!');
-                localStorage.setItem('userId', loginData.user.id);
-                mostrarBotaoLogout();
-
-                // Aguarda 3 segundos antes de redirecionar
-                setTimeout(() => {
-                    window.location.href = '/frontend/html/painel.html';
-                }, 1000);
-            }
-        }
-    } catch (error) {
-        console.error('Erro ao cadastrar e logar:', error);
-    }
-});
-
-// Login de Usuário
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById('emailLogin').value;
-    const senha = document.getElementById('senhaLogin').value;
-
-    try {
-        const response = await fetch(`${apiUrl}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, senha })
-        });
-
-        const data = await response.json();
-        if (data.success) {
-            mostrarNotificacao('Bem-vindo(a), ' + data.user.nome + '!');
-            localStorage.setItem('userId', data.user.id);
-            mostrarBotaoLogout();
-
-            setTimeout(() => {
-                window.location.href = '/frontend/html/painel.html';
-            }, 1000);
-        } else {
-            mostrarNotificacao(data.message);
-        }
-    } catch (error) {
-        console.error('Erro no login:', error);
-    }
-});
-
-
-// Botão de Logout
-function mostrarBotaoLogout() {
-    const btnLogout = document.getElementById('btnLogout');
-    if (btnLogout) {
-        btnLogout.style.display = 'block';
-    }
-}
-
-function esconderBotaoLogout() {
-    const btnLogout = document.getElementById('btnLogout');
-    if (btnLogout) {
-        btnLogout.style.display = 'none';
-    }
-}
-
-document.getElementById('btnLogout').addEventListener('click', () => {
-    localStorage.clear();
-    esconderBotaoLogout();
-    window.location.href = '/frontend/html/index.html';
-});
-
-
-
-
-// ---------------------------------------------------------------------------------
 let currentQuestion = 0;
 let score = 0;
 let questions = [];
+let isGuest = false;
 
-document.querySelector('.start-btn').addEventListener('click', async () => {
-    try {
-        // Carrega perguntas do backend
-        const response = await fetch('http://localhost:3005/perguntas');
-        questions = await response.json();
-        
-        // Esconde elementos iniciais
-        document.querySelector('.quiz-header').style.display = 'none';
-        document.querySelector('.quiz-image').style.display = 'none';
-        document.querySelector('.source-text').style.display = 'none';
-        
-        // Mostra primeira pergunta
-        showQuestion();
-    } catch (error) {
-        console.error('Erro ao carregar perguntas:', error);
-        alert('Erro ao carregar o quiz. Tente recarregar a página.');
+// Elementos DOM
+const quizIntro = document.getElementById('quizIntro');
+const quizQuestions = document.getElementById('quizQuestions');
+const quizResults = document.getElementById('quizResults');
+const startQuizBtn = document.getElementById('startQuizBtn');
+const loginModal = document.getElementById('loginModal');
+const closeModal = document.querySelector('.close-modal');
+const goToLogin = document.getElementById('goToLogin');
+const goToRegister = document.getElementById('goToRegister');
+const playWithoutAccount = document.getElementById('playWithoutAccount');
+const loginBtn = document.getElementById('loginBtn');
+const registerBtn = document.getElementById('registerBtn');
+const authButtons = document.getElementById('auth-buttons');
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+  // Esconde as seções de perguntas e resultados inicialmente
+  quizQuestions.style.display = 'none';
+  quizResults.style.display = 'none';
+  
+  // Verifica se o usuário está logado
+  checkAuthStatus();
+  
+  // Evento para iniciar o quiz
+  startQuizBtn.addEventListener('click', () => {
+    const userId = localStorage.getItem('userId');
+    
+    // Se não estiver logado, mostra o modal de opções
+    if (!userId) {
+      loginModal.style.display = 'block';
+    } else {
+      // Se estiver logado, inicia o quiz diretamente
+      startQuiz();
     }
+  });
+  
+  // Eventos do modal
+  closeModal.addEventListener('click', () => {
+    loginModal.style.display = 'none';
+  });
+  
+  goToLogin.addEventListener('click', () => {
+    window.location.href = '/frontend/html/login.html';
+  });
+  
+  goToRegister.addEventListener('click', () => {
+    window.location.href = '/frontend/html/cadastro.html';
+  });
+  
+  playWithoutAccount.addEventListener('click', () => {
+    isGuest = true;
+    loginModal.style.display = 'none';
+    startQuiz();
+  });
+  
+  // Eventos dos botões de autenticação
+  loginBtn.addEventListener('click', () => {
+    window.location.href = '/frontend/html/login.html';
+  });
+  
+  registerBtn.addEventListener('click', () => {
+    window.location.href = '/frontend/html/cadastro.html';
+  });
+  
+  // Fecha o modal se clicar fora dele
+  window.addEventListener('click', (event) => {
+    if (event.target === loginModal) {
+      loginModal.style.display = 'none';
+    }
+  });
 });
 
+// Verifica o status de autenticação
+function checkAuthStatus() {
+  const userId = localStorage.getItem('userId');
+  const userName = localStorage.getItem('userName');
+  const userPhoto = localStorage.getItem('userPhoto');
+  
+  if (userId) {
+    // Esconde botões de login/cadastro
+    authButtons.style.display = 'none';
+    
+    // Cria elemento com informações do usuário
+    const userInfo = document.createElement('div');
+    userInfo.className = 'user-info';
+    userInfo.innerHTML = `
+      ${userPhoto ? `<img src="${userPhoto}" alt="Foto do usuário">` : ''}
+      <span>${userName || 'Usuário'}</span>
+      <button class="logout-btn" id="logoutBtn">Sair</button>
+    `;
+    
+    // Insere no header
+    document.querySelector('header').appendChild(userInfo);
+    
+    // Adiciona evento de logout
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+  } else {
+    authButtons.style.display = 'block';
+  }
+}
+
+// Função de logout
+function logout() {
+  localStorage.removeItem('userId');
+  localStorage.removeItem('userName');
+  localStorage.removeItem('userPhoto');
+  window.location.reload();
+}
+
+// Função para iniciar o quiz
+async function startQuiz() {
+  try {
+    // Mostra estado de carregamento
+    quizIntro.style.display = 'none';
+    quizQuestions.style.display = 'block';
+    quizQuestions.innerHTML = `
+      <div class="loading">
+        <p>Carregando perguntas...</p>
+        <div class="spinner"></div>
+      </div>
+    `;
+    
+    // Carrega perguntas do backend
+    const response = await fetch(`${apiUrl}/perguntas`);
+    
+    if (!response.ok) {
+      throw new Error('Erro ao carregar perguntas');
+    }
+    
+    questions = await response.json();
+    
+    // Verifica se existem perguntas
+    if (!questions || questions.length === 0) {
+      throw new Error('Nenhuma pergunta disponível');
+    }
+    
+    // Mostra a primeira pergunta
+    showQuestion();
+    
+  } catch (error) {
+    console.error('Erro:', error);
+    showError('Não foi possível carregar o quiz. Por favor, tente novamente mais tarde.');
+  }
+}
+
+// Mostra a pergunta atual
 function showQuestion() {
-    const quizContainer = document.querySelector('.quiz-container');
-    const q = questions[currentQuestion];
-    
-    quizContainer.innerHTML = `
-        <div class="question-box">
-            <h2>${q.pergunta}</h2>
-            <div class="options">
-                ${q.opcoes.map((op, i) => `
-                    <button onclick="checkAnswer(${i})">${String.fromCharCode(65 + i)}) ${op}</button>
-                `).join('')}
-            </div>
-            <div class="progress">Pergunta ${currentQuestion + 1}/${questions.length}</div>
-        </div>
-    `;
+  const question = questions[currentQuestion];
+  
+  quizQuestions.innerHTML = `
+    <div class="question-box">
+      <h2>${question.pergunta}</h2>
+      <div class="options">
+        ${question.opcoes.map((option, index) => `
+          <button class="option-btn" data-index="${index}">
+            ${String.fromCharCode(65 + index)}) ${option}
+          </button>
+        `).join('')}
+      </div>
+      <div class="progress">
+        Pergunta ${currentQuestion + 1} de ${questions.length}
+      </div>
+    </div>
+  `;
+  
+  // Adiciona eventos aos botões de opção
+  document.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      checkAnswer(parseInt(e.target.dataset.index));
+    });
+  });
 }
 
+// Verifica a resposta selecionada
 function checkAnswer(selectedIndex) {
-    const correctIndex = questions[currentQuestion].resposta_correta;
-    const buttons = document.querySelectorAll('.options button');
-    
-    // Desabilita todos os botões
-    buttons.forEach(btn => btn.disabled = true);
-    
-    // Destaca visualmente
-    buttons[correctIndex].classList.add('correct');
-    if (selectedIndex !== correctIndex) {
-        buttons[selectedIndex].classList.add('incorrect');
+  const correctIndex = questions[currentQuestion].resposta_correta;
+  const options = document.querySelectorAll('.option-btn');
+  
+  // Desabilita todos os botões
+  options.forEach(btn => {
+    btn.disabled = true;
+    btn.style.cursor = 'not-allowed';
+  });
+  
+  // Marca visualmente as respostas
+  options[correctIndex].classList.add('correct');
+  if (selectedIndex !== correctIndex) {
+    options[selectedIndex].classList.add('incorrect');
+  }
+  
+  // Atualiza pontuação
+  if (selectedIndex === correctIndex) {
+    score += questions[currentQuestion].pontos;
+  }
+  
+  // Avança para próxima pergunta ou mostra resultados
+  setTimeout(() => {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      showQuestion();
+    } else {
+      showResults();
     }
-    
-    // Atualiza pontuação
-    if (selectedIndex === correctIndex) {
-        score += questions[currentQuestion].pontos;
-    }
-    
-    // Próxima pergunta após 1.5s
-    setTimeout(() => {
-        currentQuestion++;
-        if (currentQuestion < questions.length) {
-            showQuestion();
-        } else {
-            showResults();
-        }
-    }, 1500);
+  }, 1500);
 }
 
+// Mostra os resultados finais
 function showResults() {
-    const userId = localStorage.getItem('userId');
-    const quizContainer = document.querySelector('.quiz-container');
-    
-    quizContainer.innerHTML = `
-        <div class="results-box">
-            <h2>Quiz Concluído!</h2>
-            <p>Você acertou <span class="score">${score} pontos</span></p>
-            
-            ${!userId ? `
-                <div class="login-suggestion">
-                    <p>Cadastre-se para salvar sua pontuação e participar do ranking!</p>
-                    <button onclick="location.href='/frontend/html/cadastro.html'">Cadastrar Agora</button>
-                </div>
-            ` : ''}
-            
-            <button class="start-btn" onclick="location.reload()">
-                <i class="bi bi-arrow-repeat"></i> Jogar Novamente
-            </button>
+  const userId = localStorage.getItem('userId');
+  
+  quizQuestions.style.display = 'none';
+  quizResults.style.display = 'block';
+  quizResults.innerHTML = `
+    <div class="results-box">
+      <h2>Quiz Concluído!</h2>
+      <p>Sua pontuação final:</p>
+      <div class="final-score">${score} pontos</div>
+      
+      ${!userId && !isGuest ? `
+        <div class="login-suggestion">
+          <p>Cadastre-se para salvar sua pontuação e participar do ranking!</p>
+          <button onclick="location.href='/frontend/html/cadastro.html'" class="start-btn">
+            Cadastrar Agora
+          </button>
         </div>
-    `;
-    
-    // Envia score para o backend se logado
-    if (userId) {
-        fetch('http://localhost:3005/submit-score', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, score })
-        });
-    }
+      ` : ''}
+      
+      ${userId ? `
+        <div class="ranking-info">
+          <p>Sua pontuação foi salva e você está participando do ranking global!</p>
+          <button onclick="location.href='/frontend/html/ranking.html'" class="start-btn">
+            Ver Ranking
+          </button>
+        </div>
+      ` : ''}
+      
+      <button class="start-btn" onclick="location.reload()">
+        <i class="bi bi-arrow-repeat"></i> Jogar Novamente
+      </button>
+    </div>
+  `;
+  
+  // Envia a pontuação se o usuário estiver logado
+  if (userId) {
+    submitScore(userId, score);
+  }
+}
+
+// Envia a pontuação para o servidor
+async function submitScore(userId, score) {
+  try {
+    await fetch(`${apiUrl}/submit-score`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, score })
+    });
+  } catch (error) {
+    console.error('Erro ao enviar pontuação:', error);
+  }
+}
+
+// Mostra mensagem de erro
+function showError(message) {
+  quizQuestions.innerHTML = `
+    <div class="error-message">
+      <p>${message}</p>
+      <button onclick="location.reload()" class="start-btn">
+        <i class="bi bi-arrow-repeat"></i> Tentar Novamente
+      </button>
+    </div>
+  `;
 }
