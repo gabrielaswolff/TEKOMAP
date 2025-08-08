@@ -103,3 +103,136 @@ if (document.getElementById('loginForm')) {
     }
   });
 }
+
+// Adicione esta função para mostrar o ranking
+async function showRanking() {
+    const userId = localStorage.getItem('userId');
+    
+    try {
+        // Criar elementos do ranking
+        const rankingContainer = document.createElement('div');
+        rankingContainer.className = 'ranking-container';
+        
+        // Título
+        const title = document.createElement('h2');
+        title.textContent = '🏆 Ranking Global';
+        rankingContainer.appendChild(title);
+        
+        // Carregando mensagem
+        const loadingMsg = document.createElement('p');
+        loadingMsg.textContent = 'Carregando ranking...';
+        rankingContainer.appendChild(loadingMsg);
+        
+        // Substituir a área de resultados pelo ranking
+        const quizResults = document.getElementById('quizResults');
+        quizResults.innerHTML = '';
+        quizResults.appendChild(rankingContainer);
+        
+        // Obter dados do ranking
+        let rankingData = [];
+        let userPosition = null;
+        
+        if (userId) {
+            // Se usuário está logado, buscar sua posição e ranking próximo
+            const [globalRes, userRes, nearbyRes] = await Promise.all([
+                fetch(`${apiUrl}/ranking`),
+                fetch(`${apiUrl}/user-ranking/${userId}`),
+                fetch(`${apiUrl}/nearby-ranking/${userId}`)
+            ]);
+            
+            rankingData = await globalRes.json();
+            const userRank = await userRes.json();
+            const nearbyRanking = await nearbyRes.json();
+            
+            // Encontrar usuário no ranking global para destacar
+            userPosition = rankingData.findIndex(user => user.id == userId);
+            
+            // Adicionar seção "Sua Posição"
+            const userSection = document.createElement('div');
+            userSection.className = 'user-ranking-section';
+            
+            const userTitle = document.createElement('h3');
+            userTitle.textContent = '📊 Sua Posição';
+            userSection.appendChild(userTitle);
+            
+            const userRankingList = createRankingList(nearbyRanking, userId);
+            userSection.appendChild(userRankingList);
+            
+            rankingContainer.insertBefore(userSection, loadingMsg);
+        } else {
+            // Se não está logado, mostrar apenas ranking global
+            const response = await fetch(`${apiUrl}/ranking`);
+            rankingData = await response.json();
+        }
+        
+        // Remover mensagem de carregamento
+        rankingContainer.removeChild(loadingMsg);
+        
+        // Adicionar ranking global
+        const globalTitle = document.createElement('h3');
+        globalTitle.textContent = '🌎 Ranking Global';
+        rankingContainer.appendChild(globalTitle);
+        
+        const globalRankingList = createRankingList(rankingData.slice(0, 10), userId);
+        rankingContainer.appendChild(globalRankingList);
+        
+        // Botão para recarregar
+        const refreshBtn = document.createElement('button');
+        refreshBtn.className = 'refresh-btn';
+        refreshBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Atualizar';
+        refreshBtn.onclick = showRanking;
+        rankingContainer.appendChild(refreshBtn);
+        
+    } catch (error) {
+        console.error('Erro ao carregar ranking:', error);
+        const errorMsg = document.createElement('p');
+        errorMsg.className = 'error-message';
+        errorMsg.textContent = 'Erro ao carregar o ranking. Tente novamente.';
+        rankingContainer.appendChild(errorMsg);
+    }
+}
+
+// Função auxiliar para criar lista de ranking
+function createRankingList(users, currentUserId = null) {
+    const list = document.createElement('div');
+    list.className = 'ranking-list';
+    
+    users.forEach(user => {
+        const item = document.createElement('div');
+        item.className = 'ranking-item';
+        if (user.id == currentUserId) {
+            item.classList.add('current-user');
+        }
+        
+        // Posição
+        const position = document.createElement('span');
+        position.className = 'position';
+        position.textContent = `#${user.posicao || 0}`;
+        item.appendChild(position);
+        
+        // Foto (se existir)
+        if (user.foto_url) {
+            const photo = document.createElement('img');
+            photo.className = 'user-photo';
+            photo.src = user.foto_url;
+            photo.alt = user.nome;
+            item.appendChild(photo);
+        }
+        
+        // Nome
+        const name = document.createElement('span');
+        name.className = 'user-name';
+        name.textContent = user.nome;
+        item.appendChild(name);
+        
+        // Pontuação
+        const score = document.createElement('span');
+        score.className = 'user-score';
+        score.textContent = `${user.total || 0} pts`;
+        item.appendChild(score);
+        
+        list.appendChild(item);
+    });
+    
+    return list;
+}

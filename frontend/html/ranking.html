@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ranking Global - TEKOMAP</title>
+  <link rel="stylesheet" href="/frontend/css/quiz.css">
+  <link rel="stylesheet" href="/frontend/css/ranking.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+
+  <header>
+    <a href="index.html">
+      <img height="90vh" id="logo" src="/frontend/images/logo2.png" alt="Logo TEKOMAP">
+    </a>
+    <div id="auth-buttons">
+      <button id="loginBtn" class="auth-btn">Login</button>
+      <button id="registerBtn" class="auth-btn">Cadastre-se</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="ranking-page-container">
+      <div class="ranking-header">
+        <h1><i class="bi bi-trophy-fill"></i> Ranking Global TEKOMAP</h1>
+        <p>Veja como está sua posição entre os maiores conhecedores das comunidades indígenas do RS</p>
+        
+        <div class="ranking-filters">
+          <div class="filter-group">
+            <label for="time-filter">Período:</label>
+            <select id="time-filter">
+              <option value="all">Todos os tempos</option>
+              <option value="month">Este mês</option>
+              <option value="week">Esta semana</option>
+            </select>
+          </div>
+          
+          <button id="refresh-ranking" class="refresh-btn">
+            <i class="bi bi-arrow-clockwise"></i> Atualizar
+          </button>
+        </div>
+      </div>
+      
+      <div class="ranking-content">
+        <!-- Seção do usuário logado -->
+        <div id="user-ranking-section" class="ranking-section hidden">
+          <h2><i class="bi bi-person-badge"></i> Sua Posição</h2>
+          <div id="user-ranking-details" class="user-ranking-details">
+            <!-- Preenchido por JavaScript -->
+          </div>
+        </div>
+        
+        <!-- Top 3 com medalhas -->
+        <div class="ranking-section">
+          <h2><i class="bi bi-award-fill"></i> Pódio</h2>
+          <div id="top3-ranking" class="podium">
+            <!-- Preenchido por JavaScript -->
+          </div>
+        </div>
+        
+        <!-- Ranking completo -->
+        <div class="ranking-section">
+          <h2><i class="bi bi-list-ol"></i> Ranking Completo</h2>
+          <div id="full-ranking" class="ranking-list">
+            <!-- Preenchido por JavaScript -->
+          </div>
+        </div>
+      </div>
+      
+      <div class="ranking-footer">
+        <p>Atualizado em: <span id="last-updated"></span></p>
+        <button class="back-btn" onclick="window.location.href='quiz.html'">
+          <i class="bi bi-arrow-left"></i> Voltar ao Quiz
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script src="/frontend/js/auth.js"></script>
+  <script src="/frontend/js/ranking.js"></script>
+</body>
+</html>

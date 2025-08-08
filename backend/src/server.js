@@ -307,15 +307,22 @@ app.post('/submit-score', (req, res) => {
 });
 
 // Ranking global
+
+// Rota para obter ranking global (já existe, vamos melhorar)
 app.get('/ranking', (req, res) => {
     const query = `
-        SELECT u.nome, p.foto_url, SUM(s.pontuacao) as total
-        FROM scores s
-        JOIN usuarios u ON s.user_id = u.id
-        JOIN perfis p ON u.id = p.user_id
-        GROUP BY s.user_id
+        SELECT 
+            u.id,
+            u.nome, 
+            p.foto_url, 
+            COALESCE(SUM(s.pontuacao), 0) as total,
+            RANK() OVER (ORDER BY COALESCE(SUM(s.pontuacao), 0) DESC) as posicao
+        FROM usuarios u
+        LEFT JOIN perfis p ON u.id = p.user_id
+        LEFT JOIN scores s ON u.id = s.user_id
+        GROUP BY u.id
         ORDER BY total DESC
-        LIMIT 10
+        LIMIT 100
     `;
     
     db.query(query, (err, results) => {
@@ -327,3 +334,83 @@ app.get('/ranking', (req, res) => {
     });
 });
 
+// Nova rota para obter posição específica do usuário
+app.get('/user-ranking/:userId', (req, res) => {
+    const { userId } = req.params;
+    
+    const query = `
+        WITH ranked_users AS (
+            SELECT 
+                u.id,
+                COALESCE(SUM(s.pontuacao), 0) as total,
+                RANK() OVER (ORDER BY COALESCE(SUM(s.pontuacao), 0) DESC) as posicao
+            FROM usuarios u
+            LEFT JOIN scores s ON u.id = s.user_id
+            GROUP BY u.id
+        )
+        SELECT 
+            posicao,
+            total,
+            (SELECT COUNT(*) FROM ranked_users) as total_usuarios
+        FROM ranked_users
+        WHERE id = ?
+    `;
+    
+    db.query(query, [userId], (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar ranking do usuário:', err);
+            return res.status(500).json({ error: 'Erro ao buscar posição no ranking' });
+        }
+        
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Usuário não encontrado no ranking' });
+        }
+        
+        res.json(results[0]);
+    });
+});
+
+// Rota para obter usuários próximos no ranking
+app.get('/nearby-ranking/:userId', (req, res) => {
+    const { userId } = req.params;
+    const range = 2; // Número de usuários acima e abaixo para mostrar
+    
+    const query = `
+        WITH user_rank AS (
+            SELECT posicao
+            FROM (
+                SELECT 
+                    u.id,
+                    RANK() OVER (ORDER BY COALESCE(SUM(s.pontuacao), 0) DESC) as posicao
+                FROM usuarios u
+                LEFT JOIN scores s ON u.id = s.user_id
+                GROUP BY u.id
+            ) ranked
+            WHERE id = ?
+        ),
+        ranked_users AS (
+            SELECT 
+                u.id,
+                u.nome,
+                p.foto_url,
+                COALESCE(SUM(s.pontuacao), 0) as total,
+                RANK() OVER (ORDER BY COALESCE(SUM(s.pontuacao), 0) DESC) as posicao
+            FROM usuarios u
+            LEFT JOIN perfis p ON u.id = p.user_id
+            LEFT JOIN scores s ON u.id = s.user_id
+            GROUP BY u.id
+        )
+        SELECT *
+        FROM ranked_users
+        WHERE posicao BETWEEN (SELECT posicao FROM user_rank) - ? AND (SELECT posicao FROM user_rank) + ?
+        ORDER BY posicao
+    `;
+    
+    db.query(query, [userId, range, range], (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar ranking próximo:', err);
+            return res.status(500).json({ error: 'Erro ao buscar ranking próximo' });
+        }
+        res.json(results);
+    });
+});
