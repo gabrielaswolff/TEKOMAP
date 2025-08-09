@@ -26,8 +26,6 @@ app.post('/register', (req, res) => {
     });
 });
 
-// ... (outras rotas existentes)
-
 // Rota de login
 app.post('/login', (req, res) => {
   const { email, senha } = req.body;
@@ -61,7 +59,6 @@ app.post('/login', (req, res) => {
   });
 });
 
-// ... (restante do seu código existente)
 
 app.get('/usuarios', (req, res) => {
     const query = 'SELECT id, nome, email FROM usuarios';
@@ -211,7 +208,7 @@ app.get('/setup-quiz', (req, res) => {
         // Prepara os valores para inserção
         const values = perguntasQuiz.map(p => [
             p.pergunta,
-            JSON.stringify(p.opcoes), // Convertemos para JSON string
+            JSON.stringify(p.opcoes), // Converte para JSON string
             p.resposta_correta,
             p.pontos
         ]);
@@ -308,7 +305,7 @@ app.post('/submit-score', (req, res) => {
 
 // Ranking global
 
-// Rota para obter ranking global (já existe, vamos melhorar)
+// Rota para obter ranking global 
 app.get('/ranking', (req, res) => {
     const query = `
         SELECT 
@@ -334,7 +331,7 @@ app.get('/ranking', (req, res) => {
     });
 });
 
-// Nova rota para obter posição específica do usuário
+// rota para obter posição específica do usuário
 app.get('/user-ranking/:userId', (req, res) => {
     const { userId } = req.params;
     
