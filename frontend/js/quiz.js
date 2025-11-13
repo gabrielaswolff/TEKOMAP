@@ -1,5 +1,5 @@
 // Configurações globais
-const apiUrl = 'http://localhost:3005';
+const apiUrl = 'http://localhost:3006';
 let currentQuestion = 0;
 let score = 0;
 let questions = [];
@@ -78,31 +78,25 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Verifica o status de autenticação
-function checkAuthStatus() {
-  const userId = localStorage.getItem('userId');
-  const userName = localStorage.getItem('userName');
-  const userPhoto = localStorage.getItem('userPhoto');
+
+
+// Função para atualizar a foto do perfil
+function updateProfilePhoto(userPhoto) {
+  const userProfileBtn = document.getElementById('userProfileBtn');
+  const profileContainer = userProfileBtn.querySelector('a div');
   
-  if (userId) {
-    // Esconde botões de login/cadastro
-    authButtons.style.display = 'none';
-    
-    // Cria elemento com informações do usuário
-    const userInfo = document.createElement('div');
-    userInfo.className = 'user-info';
-    userInfo.innerHTML = `
-      ${userPhoto ? `<img src="${userPhoto}" alt="Foto do usuário">` : ''}
-      <span>${userName || 'Usuário'}</span>
-      <button class="logout-btn" id="logoutBtn">Sair</button>
-    `;
-    
-    // Insere no header
-    document.querySelector('header').appendChild(userInfo);
-    
-    // Adiciona evento de logout
-    document.getElementById('logoutBtn').addEventListener('click', logout);
+  if (userPhoto) {
+    // Se tem foto, cria elemento img
+    profileContainer.innerHTML = '';
+    const profileImg = document.createElement('img');
+    profileImg.src = userPhoto;
+    profileImg.alt = 'Foto do perfil';
+    profileImg.className = 'profile-img';
+    profileContainer.appendChild(profileImg);
   } else {
-    authButtons.style.display = 'block';
+    // Se não tem foto, mantém o ícone padrão
+    profileContainer.innerHTML = '<i class="bi bi-person"></i>';
+    profileContainer.className = 'default-profile-img';
   }
 }
 

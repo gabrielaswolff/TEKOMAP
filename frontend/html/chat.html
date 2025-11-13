@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - TEKOMAP</title>
+    <link rel="stylesheet" href="/frontend/css/style.css">
+    <link rel="stylesheet" href="/frontend/css/chat.css">
+    <link rel="stylesheet" href="/frontend/css/header.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+    <header>
+        <a href="index.html">
+            <img height="90vh" id="logo" src="/frontend/images/logo2.png" alt="Logo TEKOMAP" />
+        </a>
+        <div id="auth-buttons">
+            <!-- Botões de ranking e chat -->
+            <div id="header-buttons" class="header-buttons">
+                <a href="ranking.html" class="header-btn" title="Ranking">
+                    <i class="bi bi-trophy"></i>
+                    <span>Ranking</span>
+                </a>
+                <a href="chat.html" class="header-btn" title="Chat">
+                    <i class="bi bi-chat-dots"></i>
+                    <span>Chat</span>
+                </a>
+            </div>
+            
+            <!-- Botão de perfil (aparece quando usuário está logado) -->
+            <div id="userProfileBtn" class="profile-btn hidden">
+                <a href="perfil.html">
+                    <div class="profile-icon-container">
+                        <i class="bi bi-person-circle profile-icon"></i>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Botões de login/cadastro (aparecem quando usuário não está logado) -->
+            <button id="loginBtn" class="auth-btn">Login</button>
+            <button id="registerBtn" class="auth-btn">Cadastre-se</button>
+        </div>
+    </header>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Chat da Comunidade</h1>
+            <p>Converse com outros usuários do TEKOMAP em tempo real</p>
+        </div>
+
+        <div class="chat-main">
+            <div class="messages-container" id="messagesContainer">
+                <div class="loading-messages" id="loadingMessages">
+                    Carregando mensagens...
+                </div>
+            </div>
+
+            <div class="message-input-container" id="messageInputContainer">
+                <div class="login-prompt" id="loginPrompt">
+                    <p>💡 Faça <a href="login.html">login</a> para participar do chat</p>
+                </div>
+                
+                <div class="input-area hidden" id="inputArea">
+                    <div class="input-wrapper">
+                        <input type="text" id="messageInput" placeholder="Digite sua mensagem..." maxlength="500">
+                        <button id="sendButton" disabled>
+                            <span class="send-icon">➤</span>
+                        </button>
+                    </div>
+                    <div class="input-footer">
+                        <span class="char-counter" id="charCounter">0/500</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/frontend/js/auth.js"></script>
+    <script src="/frontend/js/chat.js"></script>
+    
+    <!-- Script para inicializar a autenticação -->
+    <script>
+        // Inicializar autenticação quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Página carregada - verificando autenticação...');
+            checkAuthentication().then(() => {
+                console.log('Autenticação verificada');
+            });
+        });
+    </script>
+</body>
+</html>

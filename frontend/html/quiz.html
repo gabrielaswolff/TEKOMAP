@@ -9,15 +9,37 @@
 </head>
 <body>
 
-  <header>
-    <a href="index.html">
-      <img height="90vh" id="logo" src="/frontend/images/logo2.png" alt="Logo TEKOMAP">
-    </a>
-    <div id="auth-buttons">
-      <button id="loginBtn" class="auth-btn">Login</button>
-      <button id="registerBtn" class="auth-btn">Cadastre-se</button>
-    </div>
-  </header>
+   <header>
+        <a href="index.html">
+            <img height="90vh" id="logo" src="/frontend/images/logo2.png" alt="Logo TEKOMAP" />
+        </a>
+        <div id="auth-buttons">
+            <!-- Botões de ranking e chat -->
+            <div id="header-buttons" class="header-buttons">
+                <a href="ranking.html" class="header-btn" title="Ranking">
+                    <i class="bi bi-trophy"></i>
+                    <span>Ranking</span>
+                </a>
+                <a href="chat.html" class="header-btn" title="Chat">
+                    <i class="bi bi-chat-dots"></i>
+                    <span>Chat</span>
+                </a>
+            </div>
+            
+            <!-- Botão de perfil (aparece quando usuário está logado) -->
+            <div id="userProfileBtn" class="profile-btn hidden">
+                <a href="perfil.html">
+                    <div class="profile-icon-container">
+                        <i class="bi bi-person-circle profile-icon"></i>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Botões de login/cadastro (aparecem quando usuário não está logado) -->
+            <button id="loginBtn" class="auth-btn">Login</button>
+            <button id="registerBtn" class="auth-btn">Cadastre-se</button>
+        </div>
+    </header>
 
   <main>
     <div class="quiz-container">
@@ -69,6 +91,7 @@
     </div>
   </main>
 
+  <script src="/frontend/js/auth.js"></script>
   <script src="/frontend/js/quiz.js"></script>
 </body>
 </html>

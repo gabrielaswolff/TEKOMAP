@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil</title>
+  <link rel="stylesheet" href="/frontend/css/perfil.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+<header>
+  <a href="index.html">
+    <img height="90vh" id="logo" src="/frontend/images/logo2.png" alt="Logo TEKOMAP">
+  </a>
+  <div id="auth-buttons">
+    <!-- Botões de ranking e chat -->
+    <div id="header-buttons" class="header-buttons">
+      <a href="ranking.html" class="header-btn" title="Ver Ranking">
+        <i class="bi bi-trophy"></i>
+        <span>Ranking</span>
+      </a>
+      <a href="chat.html" class="header-btn" title="Chat">
+        <i class="bi bi-chat-dots"></i>
+        <span>Chat</span>
+      </a>
+    </div>
+    
+    <!-- Botão de perfil com foto do usuário (aparece quando usuário está logado) -->
+    <div id="userProfileBtn" class="profile-btn hidden">
+      <a href="perfil.html">
+        <img id="userProfileImg" src="" alt="Foto do perfil" class="profile-img">
+      </a>
+    </div>
+    
+    <!-- Botões de login/cadastro (aparecem quando usuário não está logado) -->
+    <button id="loginBtn" class="auth-btn">Login</button>
+    <button id="registerBtn" class="auth-btn">Cadastre-se</button>
+  </div>
+</header>
+  <main class="profile-container">
+    <div class="profile-header">
+      <div class="profile-avatar-section">
+        <div class="profile-avatar">
+          <img id="profile-pic" src="/frontend/images/default.jpg" alt="Foto de perfil">
+          <button class="edit-photo-btn" id="editPhotoBtn" title="Alterar foto">
+            <i class="bi bi-camera"></i>
+          </button>
+          <input type="file" id="photoUpload" accept="image/*" style="display: none;">
+        </div>
+      </div>
+      
+      <div class="profile-main-info">
+        <div class="user-info-section">
+          <h1 id="user-name">Carregando...</h1>
+          <p id="user-email" class="user-email"></p>
+        </div>
+        
+        <div class="header-actions">
+          <button class="btn-primary" id="editProfileBtn">
+            <i class="bi bi-pencil"></i> Editar Perfil
+          </button>
+          <button class="btn-danger" id="logoutBtn">
+            <i class="bi bi-box-arrow-right"></i> Sair
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estatísticas Principais -->
+    <div class="profile-stats-grid">
+      <div class="stat-card main-stat">
+        <div class="stat-icon">
+          <i class="bi bi-trophy"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number" id="total-points">0</span>
+          <span class="stat-label">Pontos Totais</span>
+        </div>
+      </div>
+      
+      <div class="stat-card main-stat">
+        <div class="stat-icon">
+          <i class="bi bi-graph-up"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number" id="ranking-position">-</span>
+          <span class="stat-label">Posição no Ranking</span>
+        </div>
+      </div>
+      
+      <div class="stat-card main-stat">
+        <div class="stat-icon">
+          <i class="bi bi-check-circle"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-number" id="quizzes-completed">0</span>
+          <span class="stat-label">Quizzes Concluídos</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conteúdo do Perfil -->
+    <div class="profile-content">
+      <!-- Estatísticas Detalhadas -->
+      <div class="profile-section">
+        <h2><i class="bi bi-graph-up-arrow"></i> Estatísticas de Desempenho</h2>
+        <div class="stats-grid">
+          <div class="stat-card detailed">
+            <i class="bi bi-star"></i>
+            <h3>Melhor Pontuação</h3>
+            <p id="best-score">0 pontos</p>
+          </div>
+          <div class="stat-card detailed">
+            <i class="bi bi-calendar-event"></i>
+            <h3>Última Atividade</h3>
+            <p id="last-activity">Nenhuma</p>
+          </div>
+          <div class="stat-card detailed">
+            <i class="bi bi-percent"></i>
+            <h3>Taxa de Acerto</h3>
+            <p id="accuracy-rate">0%</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Histórico de Scores -->
+      <div class="profile-section">
+        <h2><i class="bi bi-clock-history"></i> Histórico Recente</h2>
+        <div class="history-list" id="recent-scores">
+          <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <p>Nenhum quiz concluído ainda</p>
+            <a href="quiz.html" class="btn-primary">Jogar Agora</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ações Secundárias -->
+      <div class="profile-actions-secondary">
+        <button class="btn-secondary" id="changePasswordBtn">
+          <i class="bi bi-shield-lock"></i> Alterar Senha
+        </button>
+        <button class="btn-danger" id="deleteAccountBtn">
+          <i class="bi bi-trash"></i> Excluir Conta
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modais (mantidos iguais) -->
+  <div id="editProfileModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2>Editar Perfil</h2>
+      <form id="editProfileForm">
+        <div class="form-group">
+          <label for="editName">Nome</label>
+          <input type="text" id="editName" name="nome" required>
+        </div>
+        <div class="form-group">
+          <label for="editEmail">E-mail</label>
+          <input type="email" id="editEmail" name="email" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="cancelEdit">Cancelar</button>
+          <button type="submit" class="btn-primary">Salvar Alterações</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="changePasswordModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2>Alterar Senha</h2>
+      <form id="changePasswordForm">
+        <div class="form-group">
+          <label for="currentPassword">Senha Atual</label>
+          <input type="password" id="currentPassword" required>
+        </div>
+        <div class="form-group">
+          <label for="newPassword">Nova Senha</label>
+          <input type="password" id="newPassword" required>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirmar Nova Senha</label>
+          <input type="password" id="confirmPassword" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="cancelPassword">Cancelar</button>
+          <button type="submit" class="btn-primary">Alterar Senha</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="deleteAccountModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2><i class="bi bi-exclamation-triangle" style="color: var(--color-danger);"></i> Excluir Conta</h2>
+      <p style="margin-bottom: 20px; color: var(--color-danger);">
+        <strong>Atenção:</strong> Esta ação é irreversível! Todos os seus dados, pontuações e histórico serão permanentemente excluídos.
+      </p>
+      <form id="deleteAccountForm">
+        <div class="form-group">
+          <label for="confirmPasswordDelete">Digite sua senha para confirmar:</label>
+          <input type="password" id="confirmPasswordDelete" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="cancelDelete">Cancelar</button>
+          <button type="submit" class="btn-danger">
+            <i class="bi bi-trash"></i> Excluir Minha Conta
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/frontend/js/perfil.js"></script>
+</body>
+</html>

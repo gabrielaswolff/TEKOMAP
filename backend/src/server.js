@@ -1,16 +1,128 @@
 const express = require('express');
 const cors = require('cors');
 const db = require('./db_config');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const WebSocket = require('ws');
 
 const app = express();
-const porta = 3005;
+const porta = 3006; // MUDEI PARA 3006
 
+// ========== MIDDLEWARES ==========
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// ========== CONFIGURAÇÃO DO WEBSOCKET ==========
+const server = app.listen(porta, () => {
+    console.log(`Servidor rodando na porta ${porta}`);
+}).on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.log(`❌ ERRO: Porta ${porta} já está em uso!`);
+        console.log('Soluções:');
+        console.log('1. Execute no terminal: taskkill /F /IM node.exe (Windows)');
+        console.log('2. Ou: pkill -f node (Linux/Mac)');
+        console.log('3. Ou altere a porta no server.js para outro número');
+        process.exit(1);
+    }
+});
 
-app.listen(porta, () => console.log(`Servidor rodando na porta ${porta}`));
+const wss = new WebSocket.Server({ server });
+const conexoes = new Set();
+
+wss.on('connection', (ws) => {
+    conexoes.add(ws);
+    console.log('Nova conexão WebSocket estabelecida');
+    
+    ws.on('close', () => {
+        conexoes.delete(ws);
+        console.log('Conexão WebSocket fechada');
+    });
+    
+    ws.on('error', (error) => {
+        console.error('Erro WebSocket:', error);
+        conexoes.delete(ws);
+    });
+});
+
+function broadcastMensagem(mensagem) {
+    const data = JSON.stringify({
+        type: 'nova_mensagem',
+        mensagem: mensagem
+    });
+    
+    conexoes.forEach((ws) => {
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(data);
+        }
+    });
+}
+
+// ========== SISTEMA DE CHAT ==========
+
+// Obter últimas mensagens do chat
+app.get('/chat/mensagens', (req, res) => {
+    const query = `
+        SELECT cm.id, cm.mensagem, cm.criado_em, u.nome, p.foto_url, cm.user_id
+        FROM chat_mensagens cm
+        JOIN usuarios u ON cm.user_id = u.id
+        LEFT JOIN perfis p ON u.id = p.user_id
+        ORDER BY cm.criado_em DESC
+        LIMIT 50
+    `;
+    
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar mensagens:', err);
+            return res.status(500).json({ error: 'Erro ao carregar mensagens' });
+        }
+        res.json(results.reverse());
+    });
+});
+
+// Enviar mensagem no chat
+app.post('/chat/mensagens', (req, res) => {
+    const { user_id, mensagem } = req.body;
+    
+    if (!user_id || !mensagem || mensagem.trim() === '') {
+        return res.status(400).json({ error: 'Dados inválidos' });
+    }
+    
+    const query = 'INSERT INTO chat_mensagens (user_id, mensagem) VALUES (?, ?)';
+    db.query(query, [user_id, mensagem.trim()], (err, result) => {
+        if (err) {
+            console.error('Erro ao enviar mensagem:', err);
+            return res.status(500).json({ error: 'Erro ao enviar mensagem' });
+        }
+        
+        const selectQuery = `
+            SELECT cm.id, cm.mensagem, cm.criado_em, u.nome, p.foto_url, cm.user_id
+            FROM chat_mensagens cm
+            JOIN usuarios u ON cm.user_id = u.id
+            LEFT JOIN perfis p ON u.id = p.user_id
+            WHERE cm.id = ?
+        `;
+        
+        db.query(selectQuery, [result.insertId], (err, results) => {
+            if (err) {
+                console.error('Erro ao buscar mensagem enviada:', err);
+                return res.status(500).json({ error: 'Mensagem enviada, mas erro ao buscar dados' });
+            }
+            
+            const mensagemCompleta = results[0];
+            broadcastMensagem(mensagemCompleta);
+            
+            res.json({
+                success: true,
+                mensagem: mensagemCompleta
+            });
+        });
+    });
+});
+
+// ========== SUAS ROTAS ORIGINAIS ==========
 
 // Rotas de usuário
 app.post('/register', (req, res) => {
@@ -41,7 +153,6 @@ app.post('/login', (req, res) => {
       return res.status(401).json({ success: false, message: 'E-mail ou senha incorretos' });
     }
 
-    
     const userId = results[0].id;
     db.query(
       'INSERT IGNORE INTO perfis (user_id) VALUES (?)',
@@ -58,7 +169,6 @@ app.post('/login', (req, res) => {
     );
   });
 });
-
 
 app.get('/usuarios', (req, res) => {
     const query = 'SELECT id, nome, email FROM usuarios';
@@ -94,29 +204,35 @@ app.get('/usuarios/:id', (req, res) => {
 // Editar Usuário
 app.put('/usuarios/editar/:id', (req, res) => {
     const { id } = req.params;
-    const { nome, email, senha } = req.body;
+    const { nome, email } = req.body; 
 
-    const query = 'UPDATE usuarios SET nome = ?, email = ?, senha = ? WHERE id = ?';
-    db.query(query, [nome, email, senha, id], (err, result) => {
+    const updateData = { nome, email };
+    
+    const updates = [];
+    const values = [];
+
+    if (nome !== undefined) {
+        updates.push('nome = ?');
+        values.push(nome);
+    }
+    if (email !== undefined) {
+        updates.push('email = ?');
+        values.push(email);
+    }
+    
+    if (updates.length === 0) {
+        return res.status(400).json({ success: false, message: 'Nenhum dado para atualizar.' });
+    }
+
+    const query = `UPDATE usuarios SET ${updates.join(', ')} WHERE id = ?`;
+    values.push(id);
+
+    db.query(query, values, (err, result) => {
         if (err) {
             console.error('Erro ao editar usuário:', err);
-            return res.status(500).json({ success: false, message: 'Erro ao editar usuário.' });
+            return res.status(500).json({ success: false, message: 'Erro ao editar usuário: ' + err.message });
         }
         res.json({ success: true, message: 'Usuário editado com sucesso!' });
-    });
-});
-
-// Deletar Usuário
-app.delete('/usuarios/deletar/:id', (req, res) => {
-    const { id } = req.params;
-
-    const query = 'DELETE FROM usuarios WHERE id = ?';
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            console.error('Erro ao deletar usuário:', err);
-            return res.status(500).json({ success: false, message: 'Erro ao deletar usuário.' });
-        }
-        res.json({ success: true, message: 'Usuário deletado com sucesso!' });
     });
 });
 
@@ -144,7 +260,6 @@ app.get('/user-info/:id', (req, res) => {
     res.json(results[0]);
   });
 });
-
 
 const perguntasQuiz = [
     {
@@ -201,19 +316,16 @@ const perguntasQuiz = [
 
 // Configuração inicial do quiz
 app.get('/setup-quiz', (req, res) => {
-    // Primeiro limpa a tabela
     db.query('TRUNCATE TABLE perguntas', (err) => {
         if (err) return res.status(500).json({ error: err.message });
         
-        // Prepara os valores para inserção
         const values = perguntasQuiz.map(p => [
             p.pergunta,
-            JSON.stringify(p.opcoes), // Converte para JSON string
+            JSON.stringify(p.opcoes),
             p.resposta_correta,
             p.pontos
         ]);
         
-        // Insere as perguntas
         db.query(
             'INSERT INTO perguntas (pergunta, opcoes, resposta_correta, pontos) VALUES ?',
             [values],
@@ -241,15 +353,12 @@ app.get('/perguntas', (req, res) => {
         
         const perguntas = results.map(r => {
             try {
-                // Verifica se opcoes não está vazio/null
                 if (!r.opcoes) {
                     throw new Error('Opções vazias');
                 }
                 
-                // Tenta parsear o JSON
                 const opcoes = JSON.parse(r.opcoes);
                 
-                // Verifica se é um array
                 if (!Array.isArray(opcoes)) {
                     throw new Error('Opções não é um array');
                 }
@@ -281,7 +390,6 @@ app.get('/perguntas', (req, res) => {
     });
 });
 
-
 // Submeter pontuação
 app.post('/submit-score', (req, res) => {
     const { userId, score } = req.body;
@@ -304,8 +412,6 @@ app.post('/submit-score', (req, res) => {
 });
 
 // Ranking global
-
-// Rota para obter ranking global 
 app.get('/ranking', (req, res) => {
     const query = `
         SELECT 
@@ -370,7 +476,7 @@ app.get('/user-ranking/:userId', (req, res) => {
 // Rota para obter usuários próximos no ranking
 app.get('/nearby-ranking/:userId', (req, res) => {
     const { userId } = req.params;
-    const range = 2; // Número de usuários acima e abaixo para mostrar
+    const range = 2;
     
     const query = `
         WITH user_rank AS (
@@ -411,3 +517,244 @@ app.get('/nearby-ranking/:userId', (req, res) => {
         res.json(results);
     });
 });
+
+// Obter scores do usuário específico
+app.get('/scores/user/:userId', (req, res) => {
+    const { userId } = req.params;
+    
+    const query = `
+        SELECT pontuacao, data 
+        FROM scores 
+        WHERE user_id = ? 
+        ORDER BY data DESC
+    `;
+    
+    db.query(query, [userId], (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar scores do usuário:', err);
+            return res.status(500).json({ error: 'Erro ao buscar histórico' });
+        }
+        res.json(results);
+    });
+});
+
+// Rota para alterar senha
+app.put('/usuarios/alterar-senha/:id', (req, res) => {
+    const { id } = req.params;
+    const { senhaAtual, novaSenha } = req.body;
+
+    const verificarQuery = 'SELECT senha FROM usuarios WHERE id = ?';
+    db.query(verificarQuery, [id], (err, results) => {
+        if (err) {
+            console.error('Erro ao verificar senha:', err);
+            return res.status(500).json({ success: false, message: 'Erro interno do servidor' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ success: false, message: 'Usuário não encontrado' });
+        }
+
+        if (results[0].senha !== senhaAtual) {
+            return res.status(401).json({ success: false, message: 'Senha atual incorreta' });
+        }
+
+        const atualizarQuery = 'UPDATE usuarios SET senha = ? WHERE id = ?';
+        db.query(atualizarQuery, [novaSenha, id], (err, result) => {
+            if (err) {
+                console.error('Erro ao alterar senha:', err);
+                return res.status(500).json({ success: false, message: 'Erro ao alterar senha' });
+            }
+
+            res.json({ success: true, message: 'Senha alterada com sucesso!' });
+        });
+    });
+});
+
+// Configuração do multer para upload de imagens
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadsDir = path.join(__dirname, 'uploads');
+        if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+        cb(null, uploadsDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'profile-' + req.params.userId + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024
+    },
+    fileFilter: function (req, file, cb) {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Apenas imagens são permitidas!'), false);
+        }
+    }
+});
+
+// Rota para upload de foto de perfil
+app.post('/upload-foto/:userId', upload.single('foto'), (req, res) => {
+    const { userId } = req.params;
+
+    if (!req.file) {
+        return res.status(400).json({ success: false, message: 'Nenhuma imagem foi enviada' });
+    }
+
+    try {
+        const fotoUrl = `/uploads/${req.file.filename}`;
+        
+        const updateQuery = 'UPDATE perfis SET foto_url = ? WHERE user_id = ?';
+        
+        db.query(updateQuery, [fotoUrl, userId], (err, result) => {
+            if (err) {
+                console.error('Erro ao atualizar foto no banco:', err);
+                fs.unlinkSync(req.file.path);
+                return res.status(500).json({ success: false, message: 'Erro ao salvar foto' });
+            }
+
+            res.json({ 
+                success: true, 
+                message: 'Foto atualizada com sucesso!',
+                fotoUrl: fotoUrl
+            });
+        });
+
+    } catch (error) {
+        console.error('Erro no upload da foto:', error);
+        res.status(500).json({ success: false, message: 'Erro no processamento da imagem' });
+    }
+});
+
+// Middleware para tratar erros do multer
+app.use((error, req, res, next) => {
+    if (error instanceof multer.MulterError) {
+        if (error.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({ success: false, message: 'Arquivo muito grande. Máximo 5MB.' });
+        }
+    }
+    res.status(500).json({ success: false, message: error.message });
+});
+
+// Rota para limpar fotos antigas
+app.delete('/limpar-foto-antiga/:userId', (req, res) => {
+    const { userId } = req.params;
+
+    const selectQuery = 'SELECT foto_url FROM perfis WHERE user_id = ?';
+    db.query(selectQuery, [userId], (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar foto:', err);
+            return res.status(500).json({ success: false, message: 'Erro interno' });
+        }
+
+        if (results.length > 0 && results[0].foto_url && results[0].foto_url !== 'default.jpg') {
+            const oldPhotoPath = path.join(__dirname, results[0].foto_url);
+            
+            if (fs.existsSync(oldPhotoPath)) {
+                fs.unlinkSync(oldPhotoPath);
+            }
+        }
+
+        res.json({ success: true, message: 'Limpeza concluída' });
+    });
+});
+
+// Deletar Usuário
+app.delete('/usuarios/deletar/:id', (req, res) => {
+    const { id } = req.params;
+    const { senha } = req.body;
+
+    console.log('Tentando excluir usuário ID:', id);
+
+    if (!senha) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Senha é obrigatória para excluir a conta' 
+        });
+    }
+
+    const verificarSenhaQuery = 'SELECT senha FROM usuarios WHERE id = ?';
+    db.query(verificarSenhaQuery, [id], (err, results) => {
+        if (err) {
+            console.error('Erro ao verificar senha:', err);
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Erro interno do servidor' 
+            });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Usuário não encontrado' 
+            });
+        }
+
+        if (results[0].senha !== senha) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Senha incorreta' 
+            });
+        }
+
+        const buscarFotoQuery = 'SELECT foto_url FROM perfis WHERE user_id = ?';
+        db.query(buscarFotoQuery, [id], (err, fotoResults) => {
+            if (err) {
+                console.error('Erro ao buscar foto:', err);
+            }
+
+            if (fotoResults && fotoResults.length > 0 && fotoResults[0].foto_url && fotoResults[0].foto_url !== 'default.jpg') {
+                try {
+                    const fotoPath = path.join(__dirname, fotoResults[0].foto_url);
+                    if (fs.existsSync(fotoPath)) {
+                        fs.unlinkSync(fotoPath);
+                        console.log('Foto deletada:', fotoPath);
+                    }
+                } catch (fileError) {
+                    console.error('Erro ao deletar foto:', fileError);
+                }
+            }
+
+            const queries = [
+                'DELETE FROM scores WHERE user_id = ?',
+                'DELETE FROM perfis WHERE user_id = ?',
+                'DELETE FROM usuarios WHERE id = ?'
+            ];
+
+            const executarQueries = (index) => {
+                if (index >= queries.length) {
+                    console.log('Usuário deletado com sucesso ID:', id);
+                    return res.json({ 
+                        success: true, 
+                        message: 'Conta excluída com sucesso!' 
+                    });
+                }
+
+                db.query(queries[index], [id], (err, result) => {
+                    if (err) {
+                        console.error(`Erro ao executar query ${index} (${queries[index]}):`, err);
+                        return res.status(500).json({ 
+                            success: false, 
+                            message: `Erro ao excluir dados: ${err.message}` 
+                        });
+                    }
+                    console.log(`Query ${index} executada:`, result.affectedRows, 'registros afetados');
+                    executarQueries(index + 1);
+                });
+            };
+
+            executarQueries(0);
+        });
+    });
+});
+
+console.log(`✅ Servidor configurado na porta ${porta}`);
+console.log(`📡 WebSocket pronto para conexões`);
+console.log(`💬 Sistema de chat implementado`);
+console.log(`🎯 Todas as rotas originais mantidas`);
