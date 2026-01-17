@@ -1,4 +1,4 @@
-#  Documentação do projeto TekoMap
+#  TekoMap -  Projeto de Pesquisa
 
 TekoMap é um site interativo com o objetivo de mapear os territórios indígenas do estado do Rio Grande do Sul. A plataforma tem como proposta principal promover educação, visibilidade e valorização das culturas indígenas da região através de recursos visuais e interativos.
 Além do mapa interativo, o site oferece um quiz educativo, onde os usuários podem testar seus conhecimentos sobre os povos indígenas e os territórios apresentados, tornando o aprendizado mais envolvente e acessível.
