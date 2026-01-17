@@ -5,19 +5,21 @@ Além do mapa interativo, o site oferece um quiz educativo, onde os usuários po
 
 # Tecnologias Utilizadas 
 
-Frontend
-
 Backend
 
-HTML
+* Node.js
+* Express.js
+* MySQL
+* Multer (upload de imagens)
+* Biblioteca Leaflet.js
 
-CSS
+Frontend
 
-JavaScript
-
-Biblioteca Leaflet.js
-
-GEOJSON
+* HTML
+* CSS
+* JavaScript
+* Biblioteca Leaflet.js
+* GEOJSON
 
 # Funcionalidades 
 
